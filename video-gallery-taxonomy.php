@@ -55,14 +55,10 @@ Class Video_Gallery_Taxonomy {
         switch ( $column_name ) {
             case 'taxonomy-video-category':
                 $str = '';
-                $categories = PostCategory::gets([
-                    'post_id'   => $item->id,
-                    'post_type' => 'post',
-                    'cate_type' => 'video-category',
-                    'select'    => 'categories.id, categories.name, categories.slug'
-                ]);
-                foreach ($categories as $key => $value) {
-                    $str .= sprintf('<a href="%s">%s</a>, ', URL_ADMIN.'/post/post_categories/edit/'.$value->slug.'?cate_type=video-category', $value->name);
+                $categories = PostCategory::getsByPost($item->id, Qr::set('cate_type', 'video-category')
+                    ->select('categories.id', 'categories.name', 'categories.slug'));
+                foreach ($categories as $value) {
+                    $str .= sprintf('<a href="%s">%s</a>, ', URL_ADMIN.'/post/post-categories/edit/'.$value->slug.'?cate_type=video-category', $value->name);
                 }
                 echo trim($str,', ');
                 break;
@@ -79,7 +75,7 @@ Class Video_Gallery_Taxonomy {
 
         if($module == 'post' && Admin::getPostType() == VDG_KEY) {
             //code
-            $product_related = InputBuilder::Post('video_url');
+            $product_related = Request::Post('video_url');
 
             if(empty($product_related)) {
                 return new SKD_Error('error', 'Đường dẫn video không được để trống.');
@@ -97,7 +93,7 @@ Class Video_Gallery_Taxonomy {
 
             if(have_posts($video)) {
 
-                $url = InputBuilder::Post('video_url');
+                $url = Request::Post('video_url');
 
                 Posts::updateMeta($post_id, 'video_url', $url);
 
