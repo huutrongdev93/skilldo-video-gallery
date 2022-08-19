@@ -5,7 +5,7 @@ Plugin class    : video_gallery
 Plugin uri      : http://sikido.vn
 Description     : Tạo thư viện video cho website
 Author          : SKDSoftware Dev Team
-Version         : 1.1.0
+Version         : 1.1.1
 */
 const VDG_NAME = 'video-gallery';
 

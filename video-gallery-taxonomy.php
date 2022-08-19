@@ -55,7 +55,7 @@ Class Video_Gallery_Taxonomy {
         switch ( $column_name ) {
             case 'taxonomy-video-category':
                 $str = '';
-                $categories = PostCategory::getsByPost($item->id, Qr::set('cate_type', 'video-category')
+                $categories = PostCategory::getsByPost($item->id, Qr::set('cate_type', 'video-category')->where('value', 'video-category')
                     ->select('categories.id', 'categories.name', 'categories.slug'));
                 foreach ($categories as $value) {
                     $str .= sprintf('<a href="%s">%s</a>, ', URL_ADMIN.'/post/post-categories/edit/'.$value->slug.'?cate_type=video-category', $value->name);
