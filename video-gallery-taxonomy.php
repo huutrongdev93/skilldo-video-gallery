@@ -8,6 +8,9 @@ Class Video_Gallery_Taxonomy {
         add_filter('admin_form_validation', array($this, 'validation'), 10, 2);
         add_action('save_object', array($this, 'saveMetaBox'), 10, 2);
         Metabox::add('video_url', 'Url youtube', 'Video_Gallery_Taxonomy::urlForm', ['module' => 'post_'.VDG_KEY]);
+
+        AdminMenu::addSub('galleries', VDG_KEY, 'Video', 'post/?post_type='.VDG_KEY);
+        AdminMenu::addSub('galleries', 'video-category', 'Danh mục video', 'post/post-categories?cate_type=video-category&post_type='.VDG_KEY);
     }
 
     public function register() {
@@ -17,7 +20,7 @@ Class Video_Gallery_Taxonomy {
                 'singular_name' => __('Videos'),
             ),
             'show_in_nav_menus'  => false,
-            'show_in_nav_admin'  => true,
+            'show_in_nav_admin'  => false,
             'menu_icon' => '<img src="'.VDG_PATH.'/assets/images/icon-300x300.png'.'" alt="">',
             'supports' => array(
                 'group' => array('info', 'seo', 'media'),
@@ -36,6 +39,7 @@ Class Video_Gallery_Taxonomy {
                 'singular_name' => __('Danh mục video'),
             ),
             'show_in_nav_menus'  => true,
+            'show_in_nav_admin'  => true,
         ]);
     }
 
