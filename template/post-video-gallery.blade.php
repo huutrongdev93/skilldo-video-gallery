@@ -8,7 +8,7 @@
                     allowfullscreen>
             </iframe>
             <div class="video-gallery-info">
-                <h3 class="header">{!! $object->title !!}</h3>
+                <h3 class="header" style="display: none;">{!! $object->title !!}</h3>
                 <div class="excerpt">{!! $object->excerpt !!}</div>
                 <div class="social-block">
                     <div class="social-btns">
@@ -25,27 +25,26 @@
                     </div>
                 </div>
             </div>
-            <?php
-            $args = array(
-                'where' => array('public' => 1, 'trash' => 0, 'post_type' => $object->post_type),
-                'params' => array( 'limit' => 6 ),
-                'related' => $object->id
-            );
-
-            // Get visble related products then sort them at random.
-            $args['related_post'] = Posts::gets( $args );
-            ?>
+            @php
+                // Get visble related products then sort them at random.
+                $related = Posts::where('public', 1)
+                ->where('trash', 0)
+                ->where('post_type', $object->post_type)
+                ->limit(6)
+                ->related($object)
+                ->fetch();
+            @endphp
             <div class="video-gallery-related">
                 <h3 class="header text-left" style="text-align: left;">VIDEO LIÊN QUAN</h3>
                 <div class="video-gallery-category row">
-                    <?php foreach ($args['related_post'] as $key => $item): $url = Posts::getMeta($item->id, 'video_url', true); ?>
+                    @foreach ($related as $key => $item)
                         <div class="col-xs-12 col-sm-6 col-md-4">
                             <div class="item video-section-outer">
                                 <div class="img video-section ">
-                                    <a href="<?php echo $url;?>" data-fancybox>
-                                        <?php Template::img($item->image, $item->title);?>
+                                    <a href="{!! Posts::getMeta($item->id, 'video_url', true) !!}" data-fancybox>
+                                        {!! Template::img($item->image, $item->title) !!}
                                         <div class="title">
-                                            <h3><?php echo $item->title;?></h3>
+                                            <h3>{{ $item->title }}</h3>
                                         </div>
                                         <div class="mfp-video play-now">
                                             <i class="icon fa fa-play"></i>
@@ -55,7 +54,7 @@
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    @endforeach
                 </div>
             </div>
         </div>
