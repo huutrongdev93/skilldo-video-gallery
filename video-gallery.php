@@ -5,7 +5,7 @@ Plugin class    : video_gallery
 Plugin uri      : http://sikido.vn
 Description     : Tạo thư viện video cho website
 Author          : SKDSoftware Dev Team
-Version         : 1.1.3
+Version         : 1.2.0
 */
 const VDG_NAME = 'video-gallery';
 
@@ -25,35 +25,19 @@ class video_gallery {
 
     public function active(): void
     {
-        $template  = [
-            'post-video-gallery.php'            => VDG_NAME.'/template/post-video-gallery.php',
-            'post-video-category.php'           => VDG_NAME.'/template/post-video-category.php',
-            'template-post-video-gallery.php'   => VDG_NAME.'/template/template-post-video-gallery.php',
-            'template-post-video-category.php'  => VDG_NAME.'/template/template-post-video-category.php',
-        ];
-        foreach ($template as $file_name => $file_path) {
-            $file_new  = Path::theme('theme-child/'.$file_name, true);
-            $file_path = Path::plugin($file_path, true);
-            if(file_exists($file_new)) continue;
-            if(file_exists($file_path)) {
-                $handle     = file_get_contents($file_path);
-                $file_new   = fopen($file_new, "w");
-                fwrite($file_new, $handle);
-                fclose($file_new);
-            }
-        }
+        $this->insertFile();
         // Add caps for Root role
         $role = Role::get('root');
-        $role->add_cap('view_video_gallery');
-        $role->add_cap('add_video_gallery');
-        $role->add_cap('edit_video_gallery');
-        $role->add_cap('delete_video_gallery');
+        $role->add('view_video_gallery');
+        $role->add('add_video_gallery');
+        $role->add('edit_video_gallery');
+        $role->add('delete_video_gallery');
         // Add caps for Administrator role
         $role = Role::get('administrator');
-        $role->add_cap('view_video_gallery');
-        $role->add_cap('add_video_gallery');
-        $role->add_cap('edit_video_gallery');
-        $role->add_cap('delete_video_gallery');
+        $role->add('view_video_gallery');
+        $role->add('add_video_gallery');
+        $role->add('edit_video_gallery');
+        $role->add('delete_video_gallery');
 
         //demo data
         $postVideo = [
@@ -93,8 +77,43 @@ class video_gallery {
         }
     }
 
+    public function restart(): void
+    {
+        $this->insertFile();
+    }
+
     public function uninstall(): void {
     }
+
+    public function insertFile():void
+    {
+        $store = Storage::disk('views');
+
+        $templateLayout  = [
+            'template-post-video-gallery.blade.php'           => 'plugins/'.VDG_NAME.'/template/template-post-video-gallery.blade.php',
+            'template-post-video-category.blade.php'  => 'plugins/'.VDG_NAME.'/template/template-post-video-category.blade.php',
+        ];
+
+        foreach ($templateLayout as $file_name => $file_path) {
+            if($store->has(Theme::name().'/theme-child/layouts/'.$file_name)) {
+                continue;
+            }
+            $store->copy($file_path, Theme::name().'/theme-child/layouts/'.$file_name);
+        }
+
+        $templateViews  = [
+            'post-video-gallery.blade.php'  => 'plugins/'.VDG_NAME.'/template/post-video-gallery.blade.php',
+            'post-video-category.blade.php' => 'plugins/'.VDG_NAME.'/template/post-video-category.blade.php',
+        ];
+
+        foreach ($templateViews as $file_name => $file_path) {
+            if($store->has(Theme::name().'/theme-child/'.$file_name)) {
+                continue;
+            }
+            $store->copy($file_path, Theme::name().'/theme-child/'.$file_name);
+        }
+    }
+
     private function loadDependencies(): void {
         require_once VDG_PATH.'/video-gallery-taxonomy.php';
         require_once VDG_PATH.'/video-gallery-roles.php';
