@@ -1,3 +1,3 @@
-{!! Theme::partial('template-full-width', [
+{!! Theme::partial('layouts/template-full-width', [
     'template' => $template
 ]) !!}
