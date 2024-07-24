@@ -1,12 +1,4 @@
 <?php
-/**
-Plugin name     : Video Gallery
-Plugin class    : video_gallery
-Plugin uri      : http://sikido.vn
-Description     : Tạo thư viện video cho website
-Author          : SKDSoftware Dev Team
-Version         : 1.2.0
-*/
 const VDG_NAME = 'video-gallery';
 
 const VDG_KEY = 'video-gallery';
