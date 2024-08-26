@@ -3,7 +3,6 @@ Class Video_Gallery_Taxonomy {
 
     function __construct() {
         $this->register();
-        add_filter('manage_post_'.VDG_KEY.'_columns', array($this, 'columnHeader'), 10);
         add_filter('admin_form_validation', array($this, 'validation'), 10, 3);
         add_action('save_post_object', array($this, 'saveMetaBox'), 10, 2);
         Metabox::add('video_url', 'Url youtube', 'Video_Gallery_Taxonomy::urlForm', ['module' => 'post_'.VDG_KEY]);
@@ -40,30 +39,6 @@ Class Video_Gallery_Taxonomy {
             'show_in_nav_menus'  => true,
             'show_in_nav_admin'  => true,
         ]);
-    }
-
-    public function columnHeader( $columns ): array
-    {
-        $columnsNew = [];
-        foreach ($columns as $key => $value) {
-            $columnsNew[$key] = $value;
-            if($key == 'title') {
-                $columnsNew['taxonomy-video-category'] = [
-                    'label' => 'Danh mục',
-                    'column' => fn($item, $args) => \SkillDo\Table\Columns\ColumnView::make('category', $item, $args)->html(function ($column) {
-                        $str = '';
-                        $categories = PostCategory::getsByPost($column->item->id, Qr::set('cate_type', 'video-category')->where('value', 'video-category')
-                            ->select('categories.id', 'categories.name', 'categories.slug'));
-
-                        foreach ($categories as $value) {
-                            $str .= sprintf('<a href="%s">%s</a>, ', URL_ADMIN . '/post/post-categories/edit/' . $value->slug . '?cate_type=video-category', $value->name);
-                        }
-                        echo trim($str, ', ');
-                    })
-                ];
-            }
-        }
-        return $columnsNew;
     }
 
     static function urlForm($object): void
@@ -110,4 +85,3 @@ Class Video_Gallery_Taxonomy {
         }
     }
 }
-
